@@ -1,0 +1,24 @@
+#!/usr/bin/python3
+
+import keyboard
+import json5
+import ipaddress
+import socket
+import datetime
+
+with open('config.json5') as j:
+    global d
+    d = json5.load(j)
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+while True:
+    print(datetime.datetime.now().isoformat() + ' waiting for key ' + d['key'])
+    keyboard.wait(d['key'])
+    print(datetime.datetime.now().isoformat() + ' EMERGENCY!!!')
+    for s in d['subnets']:
+        print(datetime.datetime.now().isoformat() + ' emergency -> ' + s + ':8889')
+        sn = ipaddress.ip_network(s)
+        for h in sn.hosts():
+            sock.sendto('emergency'.encode(), (str(h), 8889))
+    print(datetime.datetime.now().isoformat() + ' emergency response finished')

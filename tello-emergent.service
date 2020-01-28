@@ -1,0 +1,9 @@
+[Unit]
+Description=Emergency shutdown all Tello in the network
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/tello-emergent
+
+[Install]
+WantedBy=multi-user.target
