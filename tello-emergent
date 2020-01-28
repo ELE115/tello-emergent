@@ -6,9 +6,14 @@ import ipaddress
 import socket
 import datetime
 
-with open('config.json5') as j:
-    global d
-    d = json5.load(j)
+global d
+
+try:
+    with open('config.json5') as j:
+        d = json5.load(j)
+except:
+    with open('/etc/tello-emergent/config.json5') as j:
+        d = json5.load(j)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
