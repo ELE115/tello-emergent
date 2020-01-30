@@ -1,6 +1,6 @@
 # tello-emergent
 
-> Emergency shutdown all Tello in the network
+> Emergency shutdown all Tello drones in the network
 
 ## Usage
 
@@ -15,6 +15,8 @@ Configuration file `./config.json5`:
   subnets: ['192.168.10.1/24'], // target networks
 }
 ```
+
+Logs to `/var/log/tello-emergent.log` or `./tello-emergent.log`.
 
 ## Requirements
 

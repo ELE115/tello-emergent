@@ -5,6 +5,9 @@ import json5
 import ipaddress
 import socket
 import datetime
+import logging
+import sys
+import time
 
 global d
 
@@ -17,13 +20,38 @@ except:
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+logFormatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
+rootLogger = logging.getLogger()
+
+try:
+    fileHandler = logging.FileHandler('/var/log/tello-emergent.log')
+except:
+    fileHandler = logging.FileHandler('./tello-emergent.log')
+
+fileHandler.setFormatter(logFormatter)
+rootLogger.addHandler(fileHandler)
+
+consoleHandler = logging.StreamHandler()
+consoleHandler.setFormatter(logFormatter)
+rootLogger.addHandler(consoleHandler)
+
 while True:
-    print(datetime.datetime.now().isoformat() + ' waiting for key ' + d['key'])
-    keyboard.wait(d['key'])
-    print(datetime.datetime.now().isoformat() + ' EMERGENCY!!!')
-    for s in d['subnets']:
-        print(datetime.datetime.now().isoformat() + ' emergency -> ' + s + ':8889')
-        sn = ipaddress.ip_network(s)
-        for h in sn.hosts():
-            sock.sendto('emergency'.encode(), (str(h), 8889))
-    print(datetime.datetime.now().isoformat() + ' emergency response finished')
+    try:
+        logging.info('waiting for key ' + d['key'])
+        keyboard.wait(d['key'])
+        logging.warning('EMERGENCY!!!')
+        for s in d['subnets']:
+            logging.info('emergency -> ' + s + ':8889')
+            sn = ipaddress.ip_network(s)
+            for h in sn.hosts():
+                sock.sendto('emergency'.encode(), (str(h), 8889))
+        logging.info('emergency response finished')
+    except ImportError as e:
+        logging.error(e)
+        break
+    except KeyboardInterrupt:
+        logging.warning('Got KeyboardInterrupt')
+        break
+    except:
+        logging.error(sys.exc_info()[0])
+        time.sleep(1)
